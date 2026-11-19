@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+/* El sitio tiene tema claro (por defecto) y oscuro: lo elige el visitante con el botón de tema, que pone data-theme
+   en <html> (ver layout.tsx y components/site/theme-toggle.tsx). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  /* Colores del sitio, tema claro. Los grises de texto pasan 4.5:1 sobre el fondo. */
+  --paper: #ffffff;
+  --ink: #0a0a0a;
+  --ink-soft: #404040;
+  --ink-muted: #525252;
+  --ink-faint: #6b6b6b;
+  --rule: #e5e5e5;
+  --rule-strong: #d4d4d4;
+  --tint: #f5f5f5;
+  /* Tramos con problemas en la revisión de la captura: el amarillo del semáforo, oscurecido para fondo claro. */
+  --problem: #b45309;
+
+  --background: var(--paper);
+  --foreground: var(--ink-soft);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #0a0a0a;
+  --ink: #ededed;
+  --ink-soft: #c4c4c4;
+  --ink-muted: #a1a1a1;
+  --ink-faint: #8a8a8a;
+  --rule: #262626;
+  --rule-strong: #333333;
+  --tint: #141414;
+  --problem: #fab219;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-tint: var(--tint);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Portada: la escena que entra al carrusel aparece con un fundido, y la barra del carrusel se llena mientras
+   corre el tiempo de la escena actual. */
+@keyframes landing-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes landing-fill {
+  from {
+    transform: scaleX(0);
+  }
+}

@@ -1,0 +1,39 @@
+# Dependencias y builds
+node_modules/
+.next/
+out/
+
+# Secretos
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Herramientas descargadas (COLMAP, Brush) y la caché de GPU que Brush deja donde se lo ejecuta
+.tools/
+target/
+
+# Datos y resultados pesados (videos, cuadros, reconstrucciones). Las escenas de la web (web/public/scenes) sí van en
+# el repositorio, con sus splats y nubes: la demo en Vercel se despliega desde aquí y quien lo clone puede verla sin
+# reconstruir nada. Los .splat quedan fuera: la web usa SPZ.
+data/
+outputs/
+*.mp4
+*.mov
+*.ply
+*.splat
+*.ksplat
+*.spz
+*.sog
+*.rad
+*.radc
+!web/public/scenes/**/*.ply
+!web/public/scenes/**/*.spz
+
+# Sistema
+.DS_Store
+Thumbs.db
