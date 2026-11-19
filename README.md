@@ -2,6 +2,8 @@
 
 > Del video de un dron a una escena 3D que se recorre en el navegador.
 
+**Demo en vivo:** [dronai.vercel.app](https://dronai.vercel.app)
+
 ![Torre del aeropuerto de Kallang: a la izquierda la nube de puntos que calcula COLMAP, a la derecha los Gaussian splats](docs/img/kallang-nube-y-splats.webp)
 
 DronAI toma fotos o un video de dron, calcula desde dónde se tomó cada imagen, entrena Gaussian splats y publica la
