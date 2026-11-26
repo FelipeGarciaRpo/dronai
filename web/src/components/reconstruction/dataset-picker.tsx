@@ -8,11 +8,11 @@ export function DatasetPicker({ onPick, onUpload }: { onPick: (dataset: Dataset)
     <>
       <SiteHeader />
       <div className={`${container} pt-[clamp(1.75rem,4vw,3.5rem)] pb-20`}>
-        <p className={eyebrow}>Paso 1 de 3 · Las imágenes</p>
-        <h1 className={`${pageTitle} mt-4`}>¿Qué quieres reconstruir?</h1>
+        <p className={eyebrow}>Step 1 of 3 · The images</p>
+        <h1 className={`${pageTitle} mt-4`}>What do you want to reconstruct?</h1>
         <p className={`${lead} mt-4 max-w-160`}>
-          Elige un conjunto de fotos de dron. Primero verás las fotos y después cómo DronAI las convierte, paso a paso,
-          en un mundo 3D que puedes recorrer.
+          Pick a set of drone photos. First you&apos;ll see the photos, then how DronAI turns them, step by step, into
+          a 3D world you can explore.
         </p>
 
         <ul className="mt-[clamp(2rem,4.5vw,3.5rem)] grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -26,7 +26,7 @@ export function DatasetPicker({ onPick, onUpload }: { onPick: (dataset: Dataset)
                 <Image
                   unoptimized
                   src={dataset.cover}
-                  alt={`Una de las fotos de ${dataset.title}`}
+                  alt={`One of the photos from ${dataset.title}`}
                   width={320}
                   height={240}
                   className="aspect-3/2 w-full rounded-md bg-tint object-cover"
@@ -36,7 +36,7 @@ export function DatasetPicker({ onPick, onUpload }: { onPick: (dataset: Dataset)
                 <span className="mt-2 block text-sm leading-relaxed text-ink-muted">{dataset.description}</span>
                 <span className="mt-3 block text-sm font-medium text-ink">
                   <span className="underline decoration-rule-strong underline-offset-4 transition-colors group-hover:decoration-ink">
-                    Elegir esta escena
+                    Choose this scene
                   </span>{" "}
                   →
                 </span>
@@ -65,18 +65,18 @@ export function DatasetPicker({ onPick, onUpload }: { onPick: (dataset: Dataset)
                 />
               </svg>
               <span className="mt-4 flex flex-wrap items-center gap-2 text-[15px] font-medium text-ink">
-                Sube tu video
+                Upload your video
                 <span className="rounded-full bg-tint px-2 py-0.5 font-mono text-[11px] font-normal text-ink-muted">
-                  Próximamente
+                  Coming soon
                 </span>
               </span>
               <span className="mt-2 block text-sm leading-relaxed text-ink-muted">
-                Un video de dron o de celular, procesado en una GPU en la nube. Mientras tanto, mira qué videos
-                funcionan y cómo los revisa DronAI antes de reconstruir.
+                A drone or phone video, processed on a cloud GPU. In the meantime, see which videos work and how
+                DronAI reviews them before reconstructing.
               </span>
               <span className="mt-3 block text-sm font-medium text-ink">
                 <span className="underline decoration-rule-strong underline-offset-4 transition-colors group-hover:decoration-ink">
-                  Ver la revisión de videos
+                  See the video review
                 </span>{" "}
                 →
               </span>

@@ -18,7 +18,7 @@ export function PhotoGallery({ dataset, onBack, onStart }: Props) {
   if (!scene) {
     return (
       <p className="p-6 text-ink-soft">
-        Esta escena todavía no está generada en tu equipo. Sigue los pasos de <code>worker/README.md</code>.
+        This scene hasn&apos;t been generated on your machine yet. Follow the steps in <code>worker/README.md</code>.
       </p>
     );
   }
@@ -27,20 +27,20 @@ export function PhotoGallery({ dataset, onBack, onStart }: Props) {
   const items = scene.cameras.items;
   const video = scene.video;
   const date = photos?.start
-    ? new Date(photos.start).toLocaleDateString("es", { year: "numeric", month: "long", day: "numeric" })
+    ? new Date(photos.start).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
     : null;
   const seconds = video ? video.segment.end - video.segment.start : null;
   const stats = [
-    [video ? "Cuadros clave" : "Fotos", items.length.toLocaleString("es")],
-    ["Cámara", scene.sensor.replace(" - ", " ")],
-    ["Resolución", photos ? `${photos.width} × ${photos.height}` : null],
+    [video ? "Keyframes" : "Photos", items.length.toLocaleString("en-US")],
+    ["Camera", scene.sensor.replace(" - ", " ")],
+    ["Resolution", photos ? `${photos.width} × ${photos.height}` : null],
     video
-      ? ["Toma usada", `${Math.round(seconds ?? 0)} s${video.segment.count > 1 ? ` (de ${video.segment.count} tomas)` : ""}`]
-      : ["Vuelo", photos?.minutes ? `${photos.minutes.toLocaleString("es")} min` : null],
-    ["Altura", photos?.altitude != null ? `${Math.round(photos.altitude)} m sobre el suelo` : null],
-    ["Fecha", date],
+      ? ["Shot used", `${Math.round(seconds ?? 0)} s${video.segment.count > 1 ? ` (of ${video.segment.count} shots)` : ""}`]
+      : ["Flight", photos?.minutes ? `${photos.minutes.toLocaleString("en-US")} min` : null],
+    ["Altitude", photos?.altitude != null ? `${Math.round(photos.altitude)} m above ground` : null],
+    ["Date", date],
     video && video.registered < video.keyframes
-      ? ["Ubicados por COLMAP", `${video.registered} de ${video.keyframes}`]
+      ? ["Registered by COLMAP", `${video.registered} of ${video.keyframes}`]
       : null,
   ].filter((stat): stat is [string, string] => stat !== null && stat[1] !== null);
 
@@ -49,20 +49,20 @@ export function PhotoGallery({ dataset, onBack, onStart }: Props) {
       <SiteHeader />
       <div className={`${container} pt-[clamp(0.75rem,2vw,1.5rem)] pb-20`}>
         <button type="button" onClick={onBack} className={backLink}>
-          ← Elegir otra escena
+          ← Choose another scene
         </button>
         <div className="mt-4 flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
           <div className="min-w-0">
-            <p className={eyebrow}>Paso 2 de 3 · Las fotos</p>
+            <p className={eyebrow}>Step 2 of 3 · The photos</p>
             <h1 className={`${pageTitle} mt-4`}>{dataset.title}</h1>
             <p className={`${lead} mt-4 max-w-160`}>
               {video
-                ? `Estos son los ${items.length} cuadros clave que DronAI eligió del video: nítidos y separados lo justo para que haya paralaje entre uno y otro. Con ellos calculó dónde estaba la cámara y armó el mundo 3D.`
-                : `Estas son las ${items.length} fotos que tomó el dron, en el orden del vuelo. Con ellas DronAI va a armar el mundo 3D.`}
+                ? `These are the ${items.length} keyframes DronAI picked from the video: sharp, and spaced just far enough apart to give parallax from one to the next. From them it worked out where the camera was and built the 3D world.`
+                : `These are the ${items.length} photos the drone took, in flight order. DronAI will build the 3D world from them.`}
             </p>
           </div>
           <button type="button" onClick={onStart} className={primaryButton}>
-            Reconstruir en 3D <span aria-hidden>→</span>
+            Reconstruct in 3D <span aria-hidden>→</span>
           </button>
         </div>
 
@@ -77,7 +77,7 @@ export function PhotoGallery({ dataset, onBack, onStart }: Props) {
 
         {review && (
           <section className="mt-[clamp(3rem,6vw,4.5rem)]">
-            <h2 className={eyebrow}>Revisión de la captura</h2>
+            <h2 className={eyebrow}>Capture review</h2>
             <div className="mt-5">
               <ReviewPanel report={review} reportUrl={reviewUrl} compact />
             </div>
@@ -91,7 +91,7 @@ export function PhotoGallery({ dataset, onBack, onStart }: Props) {
                 <Image
                   unoptimized
                   src={resolveAsset(dataset.sceneUrl, item.img)}
-                  alt={`Foto ${k + 1} de ${items.length}`}
+                  alt={`Photo ${k + 1} of ${items.length}`}
                   width={320}
                   height={240}
                   loading="lazy"
@@ -106,7 +106,7 @@ export function PhotoGallery({ dataset, onBack, onStart }: Props) {
         </ul>
 
         <p className="mt-8 text-[13px] text-ink-faint">
-          {video ? "Video" : "Fotos"}:{" "}
+          {video ? "Video" : "Photos"}:{" "}
           <a href={dataset.source.url} className={`${textLink} text-ink-soft`}>
             {dataset.source.name}
           </a>{" "}

@@ -8,7 +8,7 @@ import { ThemeToggle } from "@/components/site/theme-toggle";
 
 const sectionGap = "pt-[clamp(4rem,8vw,7rem)]";
 
-const steps = ["Revisa el video", "Elige los cuadros", "Ubica las cámaras", "Entrena los splats", "Explóralo en la web"];
+const steps = ["Review the video", "Pick the frames", "Locate the cameras", "Train the splats", "Explore it on the web"];
 
 export default function Home() {
   return (
@@ -17,13 +17,13 @@ export default function Home() {
         <Logo />
         <nav className="order-last flex w-full items-center gap-7 text-sm text-ink-muted sm:order-none sm:ml-auto sm:w-auto">
           <a href="#escenas" className="flex min-h-11 items-center transition-colors hover:text-ink">
-            Escenas
+            Scenes
           </a>
           <a href="#metodo" className="flex min-h-11 items-center transition-colors hover:text-ink">
-            Método
+            Method
           </a>
           <Link href="/reconstruir" className="flex min-h-11 items-center text-ink hover:underline hover:underline-offset-4">
-            Reconstrucción paso a paso
+            Step-by-step reconstruction
           </Link>
         </nav>
         <ThemeToggle />
@@ -32,13 +32,13 @@ export default function Home() {
       <main>
         <section className={`${container} pt-[clamp(1.75rem,4vw,3.5rem)]`}>
           <h1 className="max-w-230 text-[clamp(1.75rem,3.3vw,2.875rem)] leading-[1.1] font-medium tracking-[-0.035em] text-balance text-ink">
-            Del video de un dron a una escena 3D que se recorre en el navegador
+            From drone video to a 3D scene you can explore in the browser
           </h1>
           <div className="mt-[clamp(1.75rem,3.4vw,2.75rem)]">
             <HeroCompare scenes={LANDING_SCENES}>
               <p className="max-w-130 text-lg leading-relaxed text-pretty">
-                DronAI calcula desde dónde se tomó cada cuadro, entrena Gaussian splats y publica la escena en la web.
-                Todo el proceso corre en una laptop con una GPU de 4 GB.
+                DronAI works out where each frame was taken from, trains Gaussian splats and publishes the scene on the
+                web. The whole process runs on a laptop with a 4 GB GPU.
               </p>
             </HeroCompare>
           </div>
@@ -48,16 +48,16 @@ export default function Home() {
           <div className="grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
             {/* El título ocupa una celda: con las cinco escenas completa las filas de dos y de tres columnas. */}
             <div className="sm:pr-6">
-              <h2 className={eyebrow}>Escenas</h2>
+              <h2 className={eyebrow}>Scenes</h2>
               <p className="mt-4 max-w-88 text-2xl leading-[1.15] font-medium tracking-[-0.025em] text-balance text-ink">
-                Reconstruidas con imágenes reales de dron
+                Reconstructed from real drone imagery
               </p>
               <p className="mt-3 max-w-104 text-sm leading-relaxed text-ink-muted">
-                Unas salen de un video, con las posiciones de la cámara calculadas por DronAI; otras, de fotos con las
-                poses del dataset.{" "}
-                <span className="hidden [@media(hover:hover)]:inline">Pasa el cursor sobre cada una para comparar</span>
-                <span className="[@media(hover:hover)]:hidden">Arrastra sobre cada una para comparar</span> la nube de
-                puntos con los splats, y ábrela para recorrerla en 3D.
+                Some come from a video, with camera poses computed by DronAI; others from photos with the dataset&apos;s
+                poses.{" "}
+                <span className="hidden [@media(hover:hover)]:inline">Hover over each one to compare</span>
+                <span className="[@media(hover:hover)]:hidden">Drag across each one to compare</span> the point cloud
+                with the splats, and open it to explore in 3D.
               </p>
             </div>
             <ul className="contents">
@@ -68,14 +68,14 @@ export default function Home() {
                       <StillPair
                         points={scene.points.still}
                         splats={scene.splats.still}
-                        alt={`${scene.title}: a la izquierda la nube de puntos, a la derecha los Gaussian splats`}
+                        alt={`${scene.title}: point cloud on the left, Gaussian splats on the right`}
                         sizes="(min-width: 1024px) 352px, (min-width: 640px) 50vw, 100vw"
                       />
-                      <SplitLabel small side="left" label="Nube de puntos" />
+                      <SplitLabel small side="left" label="Point cloud" />
                       <SplitLabel small side="right" label="Splats" />
                     </SplitFrame>
                     <p className="mt-3 font-mono text-[11px] text-ink-faint">
-                      {scene.fromVideo ? "Video · poses calculadas con COLMAP" : "Fotos · poses del dataset"}
+                      {scene.fromVideo ? "Video · poses computed with COLMAP" : "Photos · poses from the dataset"}
                     </p>
                     <p className="mt-1 text-[15px] font-medium text-ink underline-offset-4 group-hover:underline">
                       {scene.title}
@@ -89,7 +89,7 @@ export default function Home() {
         </section>
 
         <section id="metodo" className={`${container} ${sectionGap} scroll-mt-4`}>
-          <h2 className={eyebrow}>Método</h2>
+          <h2 className={eyebrow}>Method</h2>
           <ol className="mt-5 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
             {steps.map((step, i) => (
               <li key={step} className="border-t border-rule-strong pt-3.5">
@@ -105,14 +105,15 @@ export default function Home() {
         <div className="flex flex-col gap-x-12 gap-y-1 border-t border-rule pt-5 md:flex-row md:items-start md:justify-between">
           <Logo />
           <p className="max-w-160 text-[13px] leading-relaxed text-ink-faint md:pt-3">
-            Escenas de fotos:{" "}
+            Photo scenes:{" "}
             <a
               href="https://github.com/nickponline/dd-nerf-dataset"
               className="text-ink-soft underline decoration-rule-strong underline-offset-[3px] transition-colors hover:text-ink"
             >
               DroneDeploy NeRF Dataset
             </a>{" "}
-            (CC BY-NC-SA 4.0). Videos de Wikimedia Commons: Daniel Taka (CC BY 4.0) y Raimond Spekking (CC BY-SA 4.0).
+            (CC BY-NC-SA 4.0). Videos from Wikimedia Commons: Daniel Taka (CC BY 4.0) and
+            Raimond Spekking (CC BY-SA 4.0).
           </p>
         </div>
       </footer>

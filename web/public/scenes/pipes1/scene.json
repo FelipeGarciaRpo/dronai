@@ -1,12 +1,12 @@
 {
  "id": "pipes1",
- "title": "Obra con tuberías",
+ "title": "Construction site with pipes",
  "source": {
   "name": "DroneDeploy NeRF Dataset",
   "url": "https://github.com/nickponline/dd-nerf-dataset",
   "license": "CC BY-NC-SA 4.0"
  },
- "method": "Nube densa calculada por DroneDeploy, incluida en el dataset",
+ "method": "Dense point cloud computed by DroneDeploy, included in the dataset",
  "sensor": "Hasselblad - L1D-20c",
  "metric": true,
  "photos": {
@@ -1795,7 +1795,7 @@
   "count": 998663,
   "total": 1000000,
   "frame": "enu",
-  "method": "Gaussian splats entrenados por DronAI con Brush 0.3.0",
+  "method": "Gaussian splats trained by DronAI with Brush 0.3.0",
   "sh": 3
  },
  "training": {

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { ReconstructionApp } from "@/components/reconstruction/reconstruction-app";
 
 export const metadata: Metadata = {
-  title: "Reconstruir paso a paso · DronAI",
-  description: "Elige fotos de dron y mira cómo DronAI las convierte, paso a paso, en un mundo 3D.",
+  title: "Step-by-step reconstruction · DronAI",
+  description: "Pick a set of drone photos and watch DronAI turn them, step by step, into a 3D world.",
 };
 
 export default function ReconstruirPage() {

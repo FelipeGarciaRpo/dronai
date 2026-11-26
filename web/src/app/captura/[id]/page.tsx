@@ -8,7 +8,7 @@ import { DATASETS } from "@/components/reconstruction/datasets";
 // desarrollo: en producción responde 404.
 type Props = { params: Promise<{ id: string }> };
 
-export const metadata: Metadata = { title: "Captura · DronAI", robots: { index: false } };
+export const metadata: Metadata = { title: "Capture · DronAI", robots: { index: false } };
 
 export function generateStaticParams() {
   return DATASETS.map((d) => ({ id: d.id }));

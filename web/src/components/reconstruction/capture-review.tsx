@@ -6,9 +6,9 @@ import { type BreakKind, type CaptureReport, type Motion, type Verdict, resolveF
 
 // Colores de estado (fijos): siempre van con ícono y texto, nunca solos.
 export const STATUS: Record<Verdict, { fill: string; ink: string; name: string; meaning: string }> = {
-  verde: { fill: "#0ca30c", ink: "#ffffff", name: "Verde", meaning: "lista para reconstruir" },
-  amarillo: { fill: "#fab219", ink: "#0b0b0b", name: "Amarillo", meaning: "se puede, con advertencias" },
-  rojo: { fill: "#d03b3b", ink: "#ffffff", name: "Rojo", meaning: "mejor grabar de nuevo" },
+  verde: { fill: "#0ca30c", ink: "#ffffff", name: "Green", meaning: "ready to reconstruct" },
+  amarillo: { fill: "#fab219", ink: "#0b0b0b", name: "Yellow", meaning: "possible, with warnings" },
+  rojo: { fill: "#d03b3b", ink: "#ffffff", name: "Red", meaning: "better to reshoot" },
 };
 // Colores de la línea de tiempo. Salen de las variables del tema (app/globals.css), así que cambian con él. En el
 // SVG van en style: un atributo fill o stroke no admite var().
@@ -43,15 +43,15 @@ export function VerdictBadge({ verdict, short = false }: { verdict: Verdict; sho
 }
 
 function percent(value: number | null) {
-  return value === null ? "—" : `${Math.round(value * 100)} %`;
+  return value === null ? "—" : `${Math.round(value * 100)}%`;
 }
 
 function Tiles({ report }: { report: CaptureReport }) {
   const m = report.metrics;
   const photos = report.source.kind === "photos";
   const tiles: [string, number | null][] = photos
-    ? [["Fotos nítidas", m.sharp], ["Bien iluminadas", m.lit], ["Con detalle", m.detailed], ["Pares en que la cámara se desplaza", m.moving]]
-    : [["Cuadros nítidos", m.sharp], ["Bien iluminados", m.lit], ["Con detalle", m.detailed], ["Tiempo en que la cámara se desplaza", m.moving]];
+    ? [["Sharp photos", m.sharp], ["Well lit", m.lit], ["Detailed", m.detailed], ["Pairs where the camera moves", m.moving]]
+    : [["Sharp frames", m.sharp], ["Well lit", m.lit], ["Detailed", m.detailed], ["Time the camera is moving", m.moving]];
   return (
     <dl className="mt-6 grid grid-cols-2 gap-x-5 gap-y-4 sm:grid-cols-4">
       {tiles.map(([label, value]) => (
@@ -78,7 +78,7 @@ function Issues({ issues }: { issues: CaptureReport["issues"] }) {
           </span>
           <div className="text-sm">
             <p className="text-ink">{issue.message}</p>
-            <p className="text-ink-muted">Cómo mejorarlo: {issue.tip}</p>
+            <p className="text-ink-muted">How to improve it: {issue.tip}</p>
           </div>
         </li>
       ))}
@@ -91,13 +91,18 @@ function Issues({ issues }: { issues: CaptureReport["issues"] }) {
 type Span = { start: number; end: number; text: string };
 type Row = { label: string; spans: Span[]; marks: { t: number; text: string }[]; stateAt: (t: number) => string };
 
-const FLAG_TEXT: Record<string, string> = { borroso: "borroso", oscuro: "oscuro", quemado: "quemado", liso: "casi liso" };
-const BREAK_TEXT: Record<BreakKind, string> = {
-  corte: "corte de edición",
-  perdido: "se perdió el hilo",
-  "sin-solape": "no se solapa con la anterior",
+const FLAG_TEXT: Record<string, string> = {
+  borroso: "blurry",
+  oscuro: "dark",
+  quemado: "overexposed",
+  liso: "nearly featureless",
 };
-const MOTION_TEXT: Record<Motion, string> = { avanza: "se desplaza", gira: "solo gira", quieto: "quieta" };
+const BREAK_TEXT: Record<BreakKind, string> = {
+  corte: "edit cut",
+  perdido: "tracking lost",
+  "sin-solape": "no overlap with previous photo",
+};
+const MOTION_TEXT: Record<Motion, string> = { avanza: "moving", gira: "turning in place", quieto: "still" };
 
 function medianStep(times: number[]) {
   const steps = times.slice(1).map((t, i) => t - times[i]).sort((a, b) => a - b);
@@ -128,29 +133,29 @@ function buildRows(report: CaptureReport): Row[] {
   const marks = report.breaks.map((b) => ({ t: b.t, text: BREAK_TEXT[b.kind] }));
   const photos = report.source.kind === "photos";
   return [
-    flagRow("Nitidez", ["borroso"], "nítido"),
-    flagRow("Luz", ["oscuro", "quemado"], "buena"),
-    flagRow("Detalle", ["liso"], "con detalle"),
+    flagRow("Sharpness", ["borroso"], "sharp"),
+    flagRow("Light", ["oscuro", "quemado"], "good"),
+    flagRow("Detail", ["liso"], "detailed"),
     {
-      label: "Movimiento",
+      label: "Motion",
       spans: motionSpans,
       marks: [],
       stateAt: (t) => {
         const pair = report.pairs.find((p) => t >= p.t0 && t <= p.t1);
-        return pair ? MOTION_TEXT[pair.motion] : "sin datos";
+        return pair ? MOTION_TEXT[pair.motion] : "no data";
       },
     },
     {
-      label: "Continuidad",
+      label: "Continuity",
       spans: [],
       marks,
-      stateAt: (t) => marks.find((m) => Math.abs(m.t - t) <= Math.max(half, 0.5))?.text ?? (photos ? "se solapan" : "sin cortes"),
+      stateAt: (t) => marks.find((m) => Math.abs(m.t - t) <= Math.max(half, 0.5))?.text ?? (photos ? "overlapping" : "no cuts"),
     },
   ];
 }
 
 function formatTime(t: number, photos: boolean) {
-  if (photos) return `foto ${Math.round(t) + 1}`;
+  if (photos) return `photo ${Math.round(t) + 1}`;
   if (t < 60) return `${Math.round(t)} s`;
   const s = Math.round(t);
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
@@ -162,7 +167,7 @@ function formatRange(span: Span, photos: boolean, end: number) {
   if (photos) {
     const first = Math.ceil(a) + 1;
     const last = Math.floor(b) + 1;
-    return first >= last ? `foto ${first}` : `fotos ${first}–${last}`;
+    return first >= last ? `photo ${first}` : `photos ${first}–${last}`;
   }
   return `${formatTime(a, false)} – ${formatTime(b, false)}`;
 }
@@ -229,7 +234,7 @@ export function ProblemTimeline({ report, reportUrl }: { report: CaptureReport; 
     <div>
       <p className="flex items-center gap-2 text-xs text-ink-faint">
         <span className="inline-block h-2.5 w-5 rounded-sm" style={{ background: PROBLEM }} aria-hidden />
-        Tramos con problemas. Pasa el mouse (o usa las flechas) para ver cada momento.
+        Segments with problems. Hover with the mouse (or use the arrow keys) to see each moment.
       </p>
       {report.thumbs && report.thumbs.length > 0 && (
         <div className="mt-3 flex gap-1" style={{ marginLeft: labelW, marginRight: 6 }}>
@@ -238,7 +243,7 @@ export function ProblemTimeline({ report, reportUrl }: { report: CaptureReport; 
               <Image
                 unoptimized
                 src={resolveFrom(reportUrl, thumb.url)}
-                alt={`Cuadro a los ${formatTime(thumb.t, false)}`}
+                alt={`Frame at ${formatTime(thumb.t, false)}`}
                 width={480}
                 height={270}
                 className="aspect-video w-full rounded-sm bg-tint object-cover"
@@ -253,7 +258,7 @@ export function ProblemTimeline({ report, reportUrl }: { report: CaptureReport; 
         tabIndex={0}
         onKeyDown={onKey}
         onBlur={() => setHover(null)}
-        aria-label="Línea de tiempo de la revisión: nitidez, luz, detalle, movimiento y continuidad. La misma información está en la lista de abajo."
+        aria-label="Review timeline: sharpness, light, detail, motion and continuity. The same information is in the list below."
         className="relative mt-2 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
       >
         {width > 0 && (
@@ -324,7 +329,7 @@ export function ProblemTimeline({ report, reportUrl }: { report: CaptureReport; 
         )}
       </div>
       <details className="mt-2 text-sm">
-        <summary className="cursor-pointer text-xs text-ink-faint transition-colors hover:text-ink">Ver los tramos como lista</summary>
+        <summary className="cursor-pointer text-xs text-ink-faint transition-colors hover:text-ink">Show the segments as a list</summary>
         <ul className="mt-2 space-y-1 text-ink-soft">
           {rows.map((row) => {
             const items = [
@@ -334,7 +339,7 @@ export function ProblemTimeline({ report, reportUrl }: { report: CaptureReport; 
             return (
               <li key={row.label}>
                 <span className="text-ink-faint">{row.label}:</span>{" "}
-                {items.length ? items.slice(0, 12).join(" · ") + (items.length > 12 ? ` · y ${items.length - 12} más` : "") : "sin problemas"}
+                {items.length ? items.slice(0, 12).join(" · ") + (items.length > 12 ? ` · and ${items.length - 12} more` : "") : "no issues"}
               </li>
             );
           })}
@@ -362,12 +367,12 @@ export function ReviewPanel({
       <Tiles report={report} />
       {report.issues.length > 0 && <Issues issues={report.issues} />}
       <p className="mt-6 text-sm text-ink-soft">
-        <span className="text-ink-faint">Qué haría DronAI:</span> {report.tier}
+        <span className="text-ink-faint">What DronAI would do:</span> {report.tier}
       </p>
       {compact ? (
         <details className="mt-4">
           <summary className="cursor-pointer text-sm text-ink-muted underline decoration-rule-strong underline-offset-[3px] transition-colors hover:text-ink hover:decoration-ink">
-            {report.source.kind === "photos" ? "Ver la revisión foto a foto" : "Ver la revisión segundo a segundo"}
+            {report.source.kind === "photos" ? "See the photo-by-photo review" : "See the second-by-second review"}
           </summary>
           <div className="mt-3">
             <ProblemTimeline report={report} reportUrl={reportUrl} />

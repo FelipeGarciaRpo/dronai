@@ -22,28 +22,28 @@ const DNF = {
 export const DATASETS: Dataset[] = [
   {
     id: "house1",
-    title: "Casa con piscina",
-    place: "California, EE. UU.",
-    description: "220 fotos de un dron DJI Phantom 4 en un vuelo de mapeo de unos 10 minutos.",
+    title: "House with a pool",
+    place: "California, USA",
+    description: "220 photos from a DJI Phantom 4 drone on a mapping flight of about 10 minutes.",
     sceneUrl: "/scenes/house1/scene.json",
     cover: "/scenes/house1/thumbs/060.jpg",
     source: DNF,
   },
   {
     id: "pipes1",
-    title: "Obra con tuberías",
-    place: "Columbia Británica, Canadá",
-    description: "97 fotos de un DJI Mavic 2 Pro sobre una obra con tuberías y válvulas: pocas fotos, mucho detalle.",
+    title: "Construction site with pipes",
+    place: "British Columbia, Canada",
+    description:
+      "97 photos from a DJI Mavic 2 Pro over a construction site with pipes and valves: few photos, lots of detail.",
     sceneUrl: "/scenes/pipes1/scene.json",
     cover: "/scenes/pipes1/thumbs/030.jpg",
     source: DNF,
   },
   {
     id: "kallang",
-    title: "Torre del aeropuerto de Kallang",
-    place: "Singapur",
-    description:
-      "Un video de dron de 54 s que rodea la torre de control. Las posiciones de la cámara las calculó DronAI con COLMAP.",
+    title: "Kallang Airport tower",
+    place: "Singapore",
+    description: "A 54 s drone video that circles the control tower. DronAI computed the camera poses with COLMAP.",
     sceneUrl: "/scenes/kallang/scene.json",
     cover: "/scenes/kallang/thumbs/057.jpg",
     source: {
@@ -52,14 +52,13 @@ export const DATASETS: Dataset[] = [
       license: "CC BY 4.0",
     },
     fromVideo: true,
-    trainedWith: "gsplat y Difix3D+ de NVIDIA, en dos GPU T4 de Kaggle",
+    trainedWith: "gsplat and NVIDIA's Difix3D+ on two Kaggle T4 GPUs",
   },
   {
     id: "abadia",
-    title: "Abadía de Jumièges",
-    place: "Normandía, Francia",
-    description:
-      "Un video de dron de 85 s que vuela alrededor de las ruinas. Las posiciones de la cámara las calculó DronAI con COLMAP.",
+    title: "Jumièges Abbey",
+    place: "Normandy, France",
+    description: "An 85 s drone video that flies around the ruins. DronAI computed the camera poses with COLMAP.",
     sceneUrl: "/scenes/abadia/scene.json",
     cover: "/scenes/abadia/thumbs/036.jpg",
     source: {
@@ -71,9 +70,9 @@ export const DATASETS: Dataset[] = [
   },
   {
     id: "house3",
-    title: "Casa de techo marrón",
-    place: "Illinois, EE. UU.",
-    description: "182 fotos de un DJI Mavic Air, desde arriba, en diagonal y muy de cerca.",
+    title: "Brown-roof house",
+    place: "Illinois, USA",
+    description: "182 photos from a DJI Mavic Air: from overhead, at an angle and very close up.",
     sceneUrl: "/scenes/house3/scene.json",
     cover: "/scenes/house3/thumbs/130.jpg",
     source: DNF,

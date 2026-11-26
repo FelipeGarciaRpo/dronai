@@ -1,12 +1,12 @@
 {
  "id": "house3",
- "title": "Casa de techo marrón",
+ "title": "Brown-roof house",
  "source": {
   "name": "DroneDeploy NeRF Dataset",
   "url": "https://github.com/nickponline/dd-nerf-dataset",
   "license": "CC BY-NC-SA 4.0"
  },
- "method": "Nube densa calculada por DroneDeploy, incluida en el dataset",
+ "method": "Dense point cloud computed by DroneDeploy, included in the dataset",
  "sensor": "DJI - FC2103",
  "photos": {
   "count": 180,
@@ -3288,7 +3288,7 @@
   "count": 762516,
   "total": 766890,
   "frame": "enu",
-  "method": "Gaussian splats entrenados por DronAI con Brush 0.3.0",
+  "method": "Gaussian splats trained by DronAI with Brush 0.3.0",
   "sh": 3
  },
  "training": {

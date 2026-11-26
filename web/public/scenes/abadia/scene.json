@@ -1,13 +1,13 @@
 {
  "id": "abadia",
- "title": "Abadía de Jumièges",
+ "title": "Jumièges Abbey",
  "source": {
   "name": "Raimond Spekking (Wikimedia Commons)",
   "url": "https://commons.wikimedia.org/wiki/File:Abbaye_de_Jumi%C3%A8ges_from_quadcopter.webm",
   "license": "CC BY-SA 4.0"
  },
- "method": "Poses y nube de puntos calculadas por DronAI con COLMAP, a partir del video",
- "sensor": "Video de dron, 1920×1080",
+ "method": "Poses and point cloud computed by DronAI with COLMAP from the video",
+ "sensor": "Drone video, 1920×1080",
  "metric": false,
  "photos": {
   "count": 73,
@@ -1449,7 +1449,7 @@
   "count": 132974,
   "total": 133207,
   "frame": "enu",
-  "method": "Gaussian splats entrenados por DronAI con Brush 0.3.0",
+  "method": "Gaussian splats trained by DronAI with Brush 0.3.0",
   "sh": 3
  },
  "training": {

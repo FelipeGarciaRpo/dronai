@@ -142,8 +142,8 @@ export function HeroCompare({ scenes, children }: Props) {
 
   return (
     <section
-      aria-roledescription="carrusel"
-      aria-label="Escenas reconstruidas"
+      aria-roledescription="carousel"
+      aria-label="Reconstructed scenes"
       onFocus={(event) => event.target.matches(":focus-visible") && setFocused(true)}
       onBlur={(event) => !event.currentTarget.contains(event.relatedTarget) && setFocused(false)}
     >
@@ -162,11 +162,7 @@ export function HeroCompare({ scenes, children }: Props) {
                   key={scenes[i].id}
                   points={scenes[i].points.still}
                   splats={scenes[i].splats.still}
-                  alt={
-                    current
-                      ? `${scenes[i].title}: a la izquierda la nube de puntos, a la derecha los Gaussian splats`
-                      : ""
-                  }
+                  alt={current ? `${scenes[i].title}: point cloud on the left, Gaussian splats on the right` : ""}
                   sizes="(min-width: 1200px) 1120px, 100vw"
                   eager={i === 0}
                   className={current ? "z-2" : i === view.previous ? "z-1" : "opacity-0"}
@@ -200,12 +196,12 @@ export function HeroCompare({ scenes, children }: Props) {
               </div>
             )}
 
-            <SplitLabel side="left" label="Nube de puntos" detail={scene.points.detail} />
+            <SplitLabel side="left" label="Point cloud" detail={scene.points.detail} />
             <SplitLabel side="right" label="Gaussian splats" detail={scene.splats.detail} />
 
             {live && !ready && (
               <p className="absolute bottom-3 left-3 z-10 rounded bg-black/60 px-2.5 py-1 font-mono text-xs text-white/90">
-                Cargando la escena 3D · {Math.round((loading ? load.progress : 0) * 100)} %
+                Loading the 3D scene · {Math.round((loading ? load.progress : 0) * 100)}%
               </p>
             )}
             {!live && (
@@ -213,7 +209,7 @@ export function HeroCompare({ scenes, children }: Props) {
                 href={scene.href}
                 className="absolute right-3 bottom-3 z-30 rounded-md bg-white/90 px-3 py-1.5 text-sm font-medium text-zinc-900"
               >
-                Abrir en 3D →
+                Open in 3D →
               </Link>
             )}
           </SplitFrame>
@@ -221,12 +217,12 @@ export function HeroCompare({ scenes, children }: Props) {
 
         <div className="mt-3 flex flex-col gap-x-10 gap-y-1 md:flex-row md:items-start md:justify-between">
           <p className="max-w-204 pt-1.5 text-[13px] leading-relaxed text-pretty text-ink-faint">
-            <span className="font-medium text-ink">{scene.title}</span>, {scene.place}. A la izquierda, la nube de
-            puntos {scene.fromVideo ? "que calcula COLMAP" : "del dataset"}; a la derecha, los Gaussian splats
-            entrenados {scene.fromVideo ? "sobre ella" : "con las fotos del dron"}.{" "}
-            <span className="hidden [@media(hover:hover)]:inline">Mueve el cursor sobre la imagen para comparar.</span>
-            <span className="[@media(hover:hover)]:hidden">Arrastra sobre la imagen para comparar.</span>{" "}
-            {scene.fromVideo ? "Video" : "Fotos"}:{" "}
+            <span className="font-medium text-ink">{scene.title}</span>, {scene.place}. On the left, the point cloud{" "}
+            {scene.fromVideo ? "computed by COLMAP" : "from the dataset"}; on the right, the Gaussian splats trained{" "}
+            {scene.fromVideo ? "on top of it" : "on the drone photos"}.{" "}
+            <span className="hidden [@media(hover:hover)]:inline">Move the cursor over the image to compare.</span>
+            <span className="[@media(hover:hover)]:hidden">Drag across the image to compare.</span>{" "}
+            {scene.fromVideo ? "Video" : "Photos"}:{" "}
             <a
               href={scene.source.url}
               className="underline decoration-rule-strong underline-offset-[3px] transition-colors hover:text-ink"
@@ -240,13 +236,13 @@ export function HeroCompare({ scenes, children }: Props) {
             <div className="-ml-2.5 flex shrink-0 items-center text-ink-faint md:ml-0">
               {!still && (
                 <IconButton
-                  label={auto ? "Pausar el cambio automático de escena" : "Reanudar el cambio automático de escena"}
+                  label={auto ? "Pause automatic scene switching" : "Resume automatic scene switching"}
                   onClick={() => setAuto((value) => !value)}
                 >
                   {auto ? <path d="M9 6.5v11M15 6.5v11" /> : <path d="M9 6.5v11l8.5-5.5L9 6.5Z" />}
                 </IconButton>
               )}
-              <IconButton label="Escena anterior" onClick={() => go(view.index - 1)}>
+              <IconButton label="Previous scene" onClick={() => go(view.index - 1)}>
                 <path d="M14.5 6.5 9 12l5.5 5.5" />
               </IconButton>
               <ol className="mx-1 flex items-center gap-1.5">
@@ -255,7 +251,7 @@ export function HeroCompare({ scenes, children }: Props) {
                     <button
                       type="button"
                       onClick={() => go(i)}
-                      aria-label={`Ver ${item.title}`}
+                      aria-label={`Show ${item.title}`}
                       aria-current={i === view.index ? "true" : undefined}
                       className="group flex h-9 items-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
                     >
@@ -277,7 +273,7 @@ export function HeroCompare({ scenes, children }: Props) {
                   </li>
                 ))}
               </ol>
-              <IconButton label="Escena siguiente" onClick={() => go(view.index + 1)}>
+              <IconButton label="Next scene" onClick={() => go(view.index + 1)}>
                 <path d="M9.5 6.5 15 12l-5.5 5.5" />
               </IconButton>
             </div>
@@ -290,12 +286,12 @@ export function HeroCompare({ scenes, children }: Props) {
           {children}
           <div className="mt-4 flex flex-wrap gap-x-8 gap-y-1 text-[15px] font-medium text-ink">
             <Link href={scene.href} className="inline-flex min-h-11 items-center gap-2">
-              <span className="underline decoration-1 underline-offset-[5px]">Explorar la escena</span>
+              <span className="underline decoration-1 underline-offset-[5px]">Explore the scene</span>
               <span aria-hidden>→</span>
             </Link>
             <Link href="/reconstruir" className="group inline-flex min-h-11 items-center gap-2">
               <span className="underline decoration-rule-strong decoration-1 underline-offset-[5px] transition-colors group-hover:decoration-ink">
-                Ver la reconstrucción paso a paso
+                See the step-by-step reconstruction
               </span>
               <span aria-hidden>→</span>
             </Link>

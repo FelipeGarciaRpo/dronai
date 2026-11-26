@@ -1,13 +1,13 @@
 {
  "id": "kallang",
- "title": "Torre del aeropuerto de Kallang",
+ "title": "Kallang Airport tower",
  "source": {
   "name": "Daniel Taka (Wikimedia Commons)",
   "url": "https://commons.wikimedia.org/wiki/File:Kallang_Airport,_360_degree_view.webm",
   "license": "CC BY 4.0"
  },
- "method": "Poses y nube de puntos calculadas por DronAI con COLMAP, a partir del video",
- "sensor": "Video de dron, 1920×1080",
+ "method": "Poses and point cloud computed by DronAI with COLMAP from the video",
+ "sensor": "Drone video, 1920×1080",
  "metric": false,
  "photos": {
   "count": 114,
@@ -2228,7 +2228,7 @@
   "count": 1630718,
   "total": 1846548,
   "frame": "enu",
-  "method": "Gaussian splats entrenados por DronAI con gsplat y Difix3D+ (NVIDIA), en dos GPU T4 de Kaggle",
+  "method": "Gaussian splats trained by DronAI with gsplat and NVIDIA's Difix3D+ on two Kaggle T4 GPUs",
   "sh": 3
  },
  "training": {

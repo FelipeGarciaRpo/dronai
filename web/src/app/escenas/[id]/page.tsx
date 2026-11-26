@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!dataset) return {};
   return {
     title: `${dataset.title} · DronAI`,
-    description: `${dataset.description} Reconstruida con Gaussian splats.`,
+    description: `${dataset.description} Reconstructed with Gaussian splats.`,
   };
 }
 
@@ -33,21 +33,21 @@ export default async function ScenePage({ params }: Props) {
       <ViewerPanel title={dataset.title} place={dataset.place}>
         <p>{dataset.description}</p>
         <p>
-          Lo que ves son Gaussian splats entrenados por DronAI con{" "}
-          {dataset.trainedWith ?? "Brush, en una laptop con RTX 3050"}.{" "}
+          What you see are Gaussian splats trained by DronAI with{" "}
+          {dataset.trainedWith ?? "Brush on a laptop with an RTX 3050"}.{" "}
           {dataset.fromVideo
-            ? "Como un video no trae GPS, la escena no tiene escala real."
-            : "Las posiciones de las cámaras son las que trae el dataset."}{" "}
-          Lo que se vio poco queda borroso.
+            ? "Since a video has no GPS, the scene has no real-world scale."
+            : "The camera poses are the ones that come with the dataset."}{" "}
+          Whatever was barely seen stays blurry.
         </p>
         <p>
           <Link href="/reconstruir" className={`font-medium text-ink ${textLink}`}>
-            Ver la reconstrucción paso a paso
+            See the step-by-step reconstruction
           </Link>{" "}
           →
         </p>
         <p className="text-xs text-ink-faint">
-          {dataset.fromVideo ? "Video" : "Datos"}:{" "}
+          {dataset.fromVideo ? "Video" : "Data"}:{" "}
           <a href={dataset.source.url} className={`text-ink-soft ${textLink}`}>
             {dataset.source.name}
           </a>{" "}

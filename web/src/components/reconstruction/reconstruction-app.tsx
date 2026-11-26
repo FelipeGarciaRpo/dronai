@@ -14,7 +14,7 @@ function Loading({ text }: { text: string }) {
 // El visor 3D usa WebGL, así que solo se carga en el navegador.
 const ProcessView = dynamic(() => import("./process-view"), {
   ssr: false,
-  loading: () => <Loading text="Preparando el visor 3D…" />,
+  loading: () => <Loading text="Preparing the 3D viewer…" />,
 });
 
 type Step = { kind: "pick" } | { kind: "upload" } | { kind: "photos" | "process"; dataset: Dataset };
@@ -40,7 +40,7 @@ export function ReconstructionApp() {
   }
   const { dataset } = step;
   return (
-    <Suspense fallback={<Loading text="Cargando las fotos…" />}>
+    <Suspense fallback={<Loading text="Loading the photos…" />}>
       {step.kind === "photos" ? (
         <PhotoGallery
           dataset={dataset}

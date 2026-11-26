@@ -151,16 +151,16 @@ function Controls({ clockRef, totalSteps }: { clockRef: RefObject<Clock>; totalS
   const waitingSplats = stage === SPLATS && !ui.splatsReady;
 
   let text: string;
-  if (!ui.started) text = "Cargando las fotos y la nube de puntos…";
-  else if (done) text = "Listo. Arrastra para orbitar, usa la rueda para acercarte y explora la escena.";
-  else if (waitingSplats) text = "Cargando las capturas del entrenamiento…";
+  if (!ui.started) text = "Loading the photos and the point cloud…";
+  else if (done) text = "Done. Drag to orbit, scroll to zoom in and explore the scene.";
+  else if (waitingSplats) text = "Loading the training snapshots…";
   else text = STAGES[stage].text;
 
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 p-3 sm:p-4">
       <div className={`pointer-events-auto mx-auto max-w-3xl p-3 text-sm sm:p-4 ${floatingPanel}`}>
         <ol className="grid grid-cols-4 gap-3">
-          {[...STAGES.map((s) => s.title), "Listo"].map((title, i) => {
+          {[...STAGES.map((s) => s.title), "Done"].map((title, i) => {
             const progress = i < DONE ? progressOf(i, ui.time) : done ? 1 : 0;
             const active = i === stage;
             return (
@@ -187,7 +187,7 @@ function Controls({ clockRef, totalSteps }: { clockRef: RefObject<Clock>; totalS
         <div className="mt-3 flex items-center gap-2">
           <button
             type="button"
-            aria-label={ui.playing ? "Pausar" : done ? "Ver de nuevo" : "Reproducir"}
+            aria-label={ui.playing ? "Pause" : done ? "Watch again" : "Play"}
             onClick={() => update(done ? { time: 0, playing: true, autoCamera: true } : { playing: !ui.playing })}
             className="grid size-9 shrink-0 place-items-center rounded-full bg-ink text-paper transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
           >
@@ -195,7 +195,7 @@ function Controls({ clockRef, totalSteps }: { clockRef: RefObject<Clock>; totalS
           </button>
           <button
             type="button"
-            aria-label="Cambiar velocidad"
+            aria-label="Change speed"
             onClick={() => update({ speed: ui.speed === 4 ? 1 : ui.speed * 2 })}
             className="h-9 shrink-0 rounded-full border border-rule-strong px-3 font-mono text-[13px] text-ink transition-colors hover:border-ink-faint focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
           >
@@ -205,7 +205,7 @@ function Controls({ clockRef, totalSteps }: { clockRef: RefObject<Clock>; totalS
             {text}
             {stage === SPLATS && ui.step > 0 && totalSteps && (
               <span className="ml-1 font-mono text-[13px] whitespace-nowrap text-ink-muted">
-                Paso {ui.step.toLocaleString("es")} de {totalSteps.toLocaleString("es")}.
+                Step {ui.step.toLocaleString("en-US")} of {totalSteps.toLocaleString("en-US")}.
               </span>
             )}
           </p>
@@ -230,21 +230,21 @@ function Process({ scene, dataset, onBack }: { scene: SceneData; dataset: Datase
             onClick={onBack}
             className="pointer-events-auto text-xs text-ink-muted transition-colors hover:text-ink"
           >
-            ← Volver a las fotos
+            ← Back to the photos
           </button>
           <span className="pointer-events-auto">
             <ThemeToggle />
           </span>
         </div>
-        <p className={`${eyebrow} text-[11px]`}>Paso 3 de 3 · La reconstrucción</p>
+        <p className={`${eyebrow} text-[11px]`}>Step 3 of 3 · The reconstruction</p>
         <h1 className="mt-1.5 text-base font-medium tracking-[-0.01em] text-ink">{dataset.title}</h1>
         <p className="mt-1.5 text-xs leading-relaxed text-ink-faint">
           {scene.video
-            ? `Poses de cámara y nube de puntos: calculadas por DronAI con COLMAP. Video: ${dataset.source.name} · ${dataset.source.license}.`
-            : `Poses de cámara y nube de puntos: ${dataset.source.name}.`}{" "}
-          Splats: entrenados por DronAI.{" "}
+            ? `Camera poses and point cloud: computed by DronAI with COLMAP. Video: ${dataset.source.name} · ${dataset.source.license}.`
+            : `Camera poses and point cloud: ${dataset.source.name}.`}{" "}
+          Splats: trained by DronAI.{" "}
           <Link href={`/escenas/${dataset.id}`} className={`pointer-events-auto text-ink-soft ${textLink}`}>
-            Abrir en el visor completo
+            Open in the full viewer
           </Link>
         </p>
       </div>
@@ -258,7 +258,7 @@ export default function ProcessView({ dataset, onBack }: { dataset: Dataset; onB
   if (!scene) {
     return (
       <p className="p-6 text-ink-soft">
-        Esta escena todavía no está generada en tu equipo. Sigue los pasos de <code>worker/README.md</code>.
+        This scene hasn&apos;t been generated on your machine yet. Follow the steps in <code>worker/README.md</code>.
       </p>
     );
   }

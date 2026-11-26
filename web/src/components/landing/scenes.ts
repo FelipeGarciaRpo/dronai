@@ -42,26 +42,26 @@ const TRAINER: Record<string, string> = { kallang: "gsplat + Difix3D+" };
 const ORDER = ["kallang", "abadia", "pipes1", "house1", "house3"];
 const position = (id: string) => (ORDER.includes(id) ? ORDER.indexOf(id) : ORDER.length);
 
-const count = (n: number) => n.toLocaleString("es");
+const count = (n: number) => n.toLocaleString("en-US");
 
 function landingScene(dataset: Dataset, scene: Summary): LandingScene {
   const steps = TRAINING_STEPS[dataset.id];
   const folder = dataset.sceneUrl.replace(/scene\.json$/, "");
   const capture = scene.video
     ? [
-        { label: "Toma de video", value: `${Math.round(scene.video.segment.end - scene.video.segment.start)} s` },
+        { label: "Video shot", value: `${Math.round(scene.video.segment.end - scene.video.segment.start)} s` },
         scene.video.registered === scene.video.keyframes
-          ? { label: "Cuadros clave, todos ubicados por COLMAP", value: count(scene.video.keyframes) }
+          ? { label: "Keyframes, all registered by COLMAP", value: count(scene.video.keyframes) }
           : {
-              label: "Cuadros clave ubicados por COLMAP",
-              value: `${count(scene.video.registered)} de ${count(scene.video.keyframes)}`,
+              label: "Keyframes registered by COLMAP",
+              value: `${count(scene.video.registered)} of ${count(scene.video.keyframes)}`,
             },
       ]
     : [
         ...(scene.photos.minutes
-          ? [{ label: "Vuelo del dron", value: `${scene.photos.minutes.toLocaleString("es")} min` }]
+          ? [{ label: "Drone flight", value: `${scene.photos.minutes.toLocaleString("en-US")} min` }]
           : []),
-        { label: "Fotos", value: count(scene.photos.count) },
+        { label: "Photos", value: count(scene.photos.count) },
       ];
 
   return {
@@ -75,15 +75,15 @@ function landingScene(dataset: Dataset, scene: Summary): LandingScene {
     // En las escenas de video la nube la calcula DronAI con COLMAP; en las del dataset viene de DroneDeploy.
     points: {
       still: `${folder}landing-puntos.webp`,
-      detail: `${dataset.fromVideo ? "COLMAP" : "DroneDeploy"} · ${count(scene.points.count)} puntos`,
+      detail: `${dataset.fromVideo ? "COLMAP" : "DroneDeploy"} · ${count(scene.points.count)} points`,
     },
     splats: {
       still: `${folder}landing-splats.webp`,
-      detail: `${TRAINER[dataset.id] ?? "Brush"} · ${steps ? `${count(steps)} pasos · ` : ""}${count(scene.splats.count)} splats`,
+      detail: `${TRAINER[dataset.id] ?? "Brush"} · ${steps ? `${count(steps)} steps · ` : ""}${count(scene.splats.count)} splats`,
     },
     stats: [
       ...capture,
-      { label: "Puntos en la nube", value: count(scene.points.count) },
+      { label: "Points in the cloud", value: count(scene.points.count) },
       { label: "Gaussian splats", value: count(scene.splats.count) },
     ],
   };

@@ -27,8 +27,8 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      aria-label="Cambiar entre tema claro y oscuro"
-      title="Cambiar entre tema claro y oscuro"
+      aria-label="Switch between light and dark theme"
+      title="Switch between light and dark theme"
       className="grid size-9 place-items-center rounded-md text-ink-muted transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
     >
       <svg

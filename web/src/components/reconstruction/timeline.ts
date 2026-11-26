@@ -2,19 +2,19 @@
 
 export const STAGES = [
   {
-    title: "Fotos en el espacio",
+    title: "Photos in space",
     seconds: 8,
-    text: "Cada foto aparece en la posición y la dirección desde donde la tomó el dron, siguiendo su recorrido.",
+    text: "Each photo appears at the position and direction the drone took it from, following its flight path.",
   },
   {
-    title: "Nube de puntos",
+    title: "Point cloud",
     seconds: 16,
-    text: "Cada foto aporta los puntos del terreno que ve más de cerca, y estos vuelan hasta su lugar.",
+    text: "Each photo contributes the terrain points it has the closest view of, and they fly into place.",
   },
   {
     title: "Gaussian splats",
     seconds: 12,
-    text: "La GPU ajusta cientos de miles de manchas de color hasta que, desde cada foto, la escena se ve igual que la foto.",
+    text: "The GPU adjusts hundreds of thousands of color blobs until the scene, seen from each photo's viewpoint, looks just like that photo.",
   },
 ] as const;
 

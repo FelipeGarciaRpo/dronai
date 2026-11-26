@@ -32,10 +32,10 @@ export function ViewerPanel({ title, place, children }: Props) {
 }
 
 const HINTS = {
-  free: "Arrastra para orbitar · rueda para acercar · clic derecho para desplazar",
+  free: "Drag to orbit · scroll to zoom · right-click to pan",
   // Visor de las escenas: la cámara va por el recorrido del carrusel de la portada (ver path-camera.tsx).
-  drone: "Arrastra o usa las flechas ← → para recorrer el vuelo del dron",
-  orbit: "Arrastra o usa las flechas ← → para girar alrededor de la escena",
+  drone: "Drag or use the ← → arrow keys to follow the drone's flight",
+  orbit: "Drag or use the ← → arrow keys to circle around the scene",
 };
 
 /** Las instrucciones para moverse por el visor, al pie del panel. */

@@ -25,8 +25,8 @@ export default function RealSceneCanvas({ sceneUrl }: { sceneUrl: string }) {
     return (
       <div className="grid h-full place-items-center px-6 text-center text-sm text-neutral-400">
         <p>
-          Esta escena todavía no está generada en tu equipo. Sigue los pasos de <code>worker/README.md</code>{" "}
-          (comando <code>dronai-worker dnf-import</code>).
+          This scene hasn&apos;t been generated on your machine yet. Follow the steps in{" "}
+          <code>worker/README.md</code> (the <code>dronai-worker dnf-import</code> command).
         </p>
       </div>
     );
@@ -38,8 +38,8 @@ export default function RealSceneCanvas({ sceneUrl }: { sceneUrl: string }) {
   const showSplats = splats !== null && layer === "splats";
   // En las escenas de video la nube la calcula DronAI con COLMAP; en las del dataset, viene de DroneDeploy.
   const layers: { id: Layer; label: string }[] = [
-    { id: "splats", label: "Splats de DronAI" },
-    { id: "points", label: scene.video ? "Nube de COLMAP" : "Nube de DroneDeploy" },
+    { id: "splats", label: "DronAI splats" },
+    { id: "points", label: scene.video ? "COLMAP point cloud" : "DroneDeploy point cloud" },
   ];
 
   return (
@@ -73,8 +73,8 @@ export default function RealSceneCanvas({ sceneUrl }: { sceneUrl: string }) {
         <div className="absolute right-4 bottom-4 left-4 flex flex-col items-end gap-2 text-sm text-ink-soft sm:left-auto">
           {showSplats && progress < 1 && (
             <p className={`px-3 py-1.5 font-mono text-xs ${floatingPanel}`}>
-              Cargando {splats.count.toLocaleString("es")} splats
-              {progress > 0 ? ` · ${Math.round(progress * 100)} %` : "…"}
+              Loading {splats.count.toLocaleString("en-US")} splats
+              {progress > 0 ? ` · ${Math.round(progress * 100)}%` : "…"}
             </p>
           )}
           <div className={`flex p-1 ${floatingPanel}`} role="group">
@@ -99,7 +99,7 @@ export default function RealSceneCanvas({ sceneUrl }: { sceneUrl: string }) {
               onChange={(e) => setShowCameras(e.target.checked)}
               className="accent-ink"
             />
-            Fotos del dron
+            Drone photos
           </label>
         </div>
       )}

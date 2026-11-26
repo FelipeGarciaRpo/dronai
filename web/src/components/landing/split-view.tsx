@@ -72,7 +72,7 @@ export function SplitFrame({ children, className = "", splitRef, handle = false,
         {handle && (
           <button
             type="button"
-            aria-label="Separador entre la nube de puntos y los splats: muévelo con las flechas"
+            aria-label="Divider between the point cloud and the splats: move it with the arrow keys"
             onKeyDown={(event) => {
               if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
               event.preventDefault();

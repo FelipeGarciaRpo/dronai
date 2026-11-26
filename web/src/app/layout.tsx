@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "DronAI",
-  description: "Del video de un dron a un mundo 3D explorable en el navegador.",
+  description: "From drone video to a 3D world you can explore in the browser.",
 };
 
 // El tema que eligió el visitante se guarda en localStorage. Este script lo aplica mientras el navegador lee el
@@ -25,7 +25,7 @@ const applyTheme = `(function(){try{var t=localStorage.getItem(${JSON.stringify(
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="es"
+      lang="en"
       data-theme="light"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
