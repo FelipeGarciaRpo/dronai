@@ -3,10 +3,13 @@
 import { OrbitControls } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import Link from "next/link";
-import { type RefObject, Suspense, memo, use, useEffect, useMemo, useRef, useState } from "react";
+import { type RefObject, Suspense, memo, use, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type CameraPath, cameraPath } from "../landing/camera-path";
 import { CANVAS_BACKGROUND, eyebrow, floatingPanel, textLink } from "../site/styles";
 import { ThemeToggle } from "../site/theme-toggle";
+import { followPath, usePathInput } from "../viewer/path-camera";
 import { type SceneData, loadScene, resolveAsset, toShots } from "../viewer/scene-data";
+import { VIEWER_HINTS } from "../viewer/viewer-panel";
 import { AnimatedPoints } from "./animated-points";
 import type { Dataset } from "./datasets";
 import { PhotoFrames } from "./photo-frames";
@@ -15,7 +18,6 @@ import {
   type Clock,
   DONE,
   INITIAL_CLOCK,
-  PHOTOS,
   POINTS,
   SPLATS,
   STAGES,
@@ -28,10 +30,9 @@ import {
 import { TrainingSplats } from "./training-splats";
 
 // Avanza el reloj en cada frame. Se monta recién cuando cargaron las fotos y la nube (dentro del mismo
-// Suspense), así la reproducción no arranca antes de tiempo. También mueve la cámara: gira despacio y
-// se acerca mientras se arma la nube, hasta que el visitante la toca.
-function ClockDriver({ clockRef, baseDistance }: { clockRef: RefObject<Clock>; baseDistance: number }) {
-  useFrame((state, delta) => {
+// Suspense), así la reproducción no arranca antes de tiempo.
+function ClockDriver({ clockRef }: { clockRef: RefObject<Clock> }) {
+  useFrame((_, delta) => {
     const clock = clockRef.current;
     clock.started = true;
     if (clock.playing) {
@@ -41,18 +42,122 @@ function ClockDriver({ clockRef, baseDistance }: { clockRef: RefObject<Clock>; b
       clock.time = Math.min(next, TOTAL_SECONDS);
       if (clock.time >= TOTAL_SECONDS) clock.playing = false;
     }
+  });
+  return null;
+}
 
-    const controls = state.controls as unknown as { autoRotate: boolean; target: THREE.Vector3 } | null;
-    if (!controls) return;
+const ORBIT_FOV = 50;
+// Lo que tarda la cámara en pasar de la vista general al recorrido del visor, o de vuelta.
+const BLEND_SECONDS = 2;
+
+type OrbitControlsState = { enabled: boolean; autoRotate: boolean; target: THREE.Vector3 };
+
+/** Fase del recorrido cuya posición queda más cerca de `position`. */
+function nearestPhase(path: CameraPath, position: THREE.Vector3, probe: THREE.PerspectiveCamera) {
+  let best = 0;
+  let bestDistance = Infinity;
+  for (let i = 0; i < 360; i++) {
+    path.place(i / 360, probe);
+    const distance = probe.position.distanceToSquared(position);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      best = i / 360;
+    }
+  }
+  return best;
+}
+
+// Mueve la cámara. Con las fotos y la nube, gira despacio alrededor de la escena y se acerca mientras se arma la nube,
+// hasta que el visitante la toca; se puede orbitar libremente. Desde que aparecen los splats va por el mismo recorrido
+// que el visor de /escenas (ver path-camera.tsx), que no muestra lo que el dron no vio: avanza sola mientras se
+// entrenan y el visitante la mueve por el recorrido. Al pasar de un modo al otro vuela con suavidad.
+function CameraDirector({ clockRef, scene }: { clockRef: RefObject<Clock>; scene: SceneData }) {
+  const path = useMemo(() => cameraPath(scene), [scene]);
+  const overview = useMemo(() => {
+    const target = new THREE.Vector3(...scene.view.target);
+    const view = new THREE.PerspectiveCamera();
+    view.position.set(...scene.view.position);
+    view.lookAt(target);
+    return { position: view.position, quaternion: view.quaternion, distance: view.position.distanceTo(target) };
+  }, [scene]);
+  // Pose de la cámara al empezar el vuelo de un modo al otro; `t` va de 0 a 1 durante el vuelo.
+  const blendRef = useRef({ t: 1, position: new THREE.Vector3(), quaternion: new THREE.Quaternion(), fov: ORBIT_FOV });
+  // Cámara auxiliar donde se calcula hacia dónde va la cámara de verdad.
+  const probeRef = useRef(new THREE.PerspectiveCamera());
+  const onPath = useRef(false);
+  const wanted = useRef(0);
+  const shown = useRef(0);
+  const direction = useRef(1);
+  const stopAutoCamera = useCallback(() => {
+    clockRef.current.autoCamera = false;
+  }, [clockRef]);
+  usePathInput(path, wanted, stopAutoCamera, onPath);
+
+  useFrame((state, delta) => {
+    const clock = clockRef.current;
+    const blend = blendRef.current;
+    const probe = probeRef.current;
+    const camera = state.camera as THREE.PerspectiveCamera;
+    const controls = state.controls as unknown as OrbitControlsState | null;
     const { stage, local } = locate(clock.time);
-    controls.autoRotate = clock.autoCamera && clock.playing && stage < DONE;
-    if (clock.autoCamera && stage < DONE) {
-      const closer = stage === PHOTOS ? 0 : stage === POINTS ? smoothstep(0, 0.6, local) : 1;
-      const offset = state.camera.position.clone().sub(controls.target);
-      const current = offset.length();
-      const wanted = baseDistance * (1 - 0.35 * closer);
-      offset.setLength(current + (wanted - current) * Math.min(1, delta * 1.5));
-      state.camera.position.copy(controls.target).add(offset);
+
+    const wantPath = stage >= SPLATS;
+    if (wantPath !== onPath.current) {
+      onPath.current = wantPath;
+      blend.t = 0;
+      blend.position.copy(camera.position);
+      blend.quaternion.copy(camera.quaternion);
+      blend.fov = camera.fov;
+      if (wantPath) {
+        wanted.current = shown.current = nearestPhase(path, camera.position, probe);
+        // En un recorrido que va y vuelve, avanza hacia el lado con más camino por delante.
+        direction.current = path.pingPong && wanted.current > 0.5 ? -1 : 1;
+      }
+    }
+
+    let fov = ORBIT_FOV;
+    if (onPath.current) {
+      if (controls) controls.enabled = controls.autoRotate = false;
+      if (clock.autoCamera && clock.playing && stage < DONE) {
+        const next = wanted.current + (direction.current * Math.min(delta, 0.1) * clock.speed) / path.seconds;
+        wanted.current = path.pingPong ? THREE.MathUtils.clamp(next, 0, 1) : next;
+      }
+      path.place(followPath(path, shown, wanted, delta), probe);
+      fov = path.fov;
+    } else if (blend.t < 1) {
+      // De vuelta a la vista general, al repetir o al volver a una etapa anterior. Los controles esperan a que llegue,
+      // para retomar sin saltos.
+      if (controls) controls.enabled = false;
+      probe.position.copy(overview.position);
+      probe.quaternion.copy(overview.quaternion);
+    } else {
+      if (!controls) return;
+      controls.enabled = true;
+      controls.autoRotate = clock.autoCamera && clock.playing;
+      if (clock.autoCamera) {
+        const closer = stage === POINTS ? smoothstep(0, 0.6, local) : 0;
+        const offset = camera.position.clone().sub(controls.target);
+        const current = offset.length();
+        const distance = overview.distance * (1 - 0.35 * closer);
+        offset.setLength(current + (distance - current) * Math.min(1, delta * 1.5));
+        camera.position.copy(controls.target).add(offset);
+      }
+      return;
+    }
+
+    if (blend.t < 1) {
+      blend.t = Math.min(1, blend.t + delta / BLEND_SECONDS);
+      const ease = smoothstep(0, 1, blend.t);
+      camera.position.lerpVectors(blend.position, probe.position, ease);
+      camera.quaternion.slerpQuaternions(blend.quaternion, probe.quaternion, ease);
+      fov = blend.fov + (fov - blend.fov) * ease;
+    } else {
+      camera.position.copy(probe.position);
+      camera.quaternion.copy(probe.quaternion);
+    }
+    if (camera.fov !== fov) {
+      camera.fov = fov;
+      camera.updateProjectionMatrix();
     }
   });
   return null;
@@ -78,13 +183,12 @@ const Scene3D = memo(function Scene3D({
   }, [scene, sceneUrl]);
   const frame = scene.training?.frame ?? scene.splats?.frame ?? "viewer";
   const hasPhotos = photoUrls.every((url) => url !== null);
-  const baseDistance = new THREE.Vector3(...scene.view.position).distanceTo(new THREE.Vector3(...scene.view.target));
 
   return (
     <Canvas
       dpr={[1, 1.5]}
       gl={{ antialias: false }}
-      camera={{ position: scene.view.position, fov: 50, near: 0.1, far: 1000 }}
+      camera={{ position: scene.view.position, fov: ORBIT_FOV, near: 0.1, far: 1000 }}
     >
       <color attach="background" args={[CANVAS_BACKGROUND]} />
       <Suspense fallback={null}>
@@ -104,7 +208,8 @@ const Scene3D = memo(function Scene3D({
           size={scene.points.size * 1.5}
           clockRef={clockRef}
         />
-        <ClockDriver clockRef={clockRef} baseDistance={baseDistance} />
+        <ClockDriver clockRef={clockRef} />
+        <CameraDirector clockRef={clockRef} scene={scene} />
       </Suspense>
       {snapshots.length > 0 && <TrainingSplats snapshots={snapshots} frame={frame} clockRef={clockRef} />}
       <OrbitControls
@@ -135,7 +240,16 @@ function PlayIcon({ playing }: { playing: boolean }) {
   );
 }
 
-function Controls({ clockRef, totalSteps }: { clockRef: RefObject<Clock>; totalSteps: number | null }) {
+function Controls({
+  clockRef,
+  totalSteps,
+  camera,
+}: {
+  clockRef: RefObject<Clock>;
+  totalSteps: number | null;
+  /** Cómo se mueve la cámara al terminar, para las instrucciones. */
+  camera: "drone" | "orbit";
+}) {
   const [ui, setUi] = useState<Clock>(INITIAL_CLOCK);
   useEffect(() => {
     const id = setInterval(() => setUi({ ...clockRef.current }), 100);
@@ -152,7 +266,7 @@ function Controls({ clockRef, totalSteps }: { clockRef: RefObject<Clock>; totalS
 
   let text: string;
   if (!ui.started) text = "Loading the photos and the point cloud…";
-  else if (done) text = "Done. Drag to orbit, scroll to zoom in and explore the scene.";
+  else if (done) text = `Done. ${VIEWER_HINTS[camera]}.`;
   else if (waitingSplats) text = "Loading the training snapshots…";
   else text = STAGES[stage].text;
 
@@ -248,7 +362,11 @@ function Process({ scene, dataset, onBack }: { scene: SceneData; dataset: Datase
           </Link>
         </p>
       </div>
-      <Controls clockRef={clockRef} totalSteps={scene.training?.totalSteps ?? null} />
+      <Controls
+        clockRef={clockRef}
+        totalSteps={scene.training?.totalSteps ?? null}
+        camera={scene.video ? "drone" : "orbit"}
+      />
     </div>
   );
 }

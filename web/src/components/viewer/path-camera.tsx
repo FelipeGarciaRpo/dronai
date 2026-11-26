@@ -1,7 +1,7 @@
 "use client";
 
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { type RefObject, useEffect, useRef } from "react";
 import type { CameraPath } from "@/components/landing/camera-path";
 
 // Cámara del visor sobre el mismo recorrido que la comparación de la portada (ver landing/camera-path.ts): en las
@@ -15,22 +15,31 @@ const SECONDS_PER_KEY = 2;
 // Qué tan rápido la cámara alcanza el punto pedido: más alto, más rápido.
 const SMOOTHING = 8;
 
-export function PathCamera({ path }: { path: CameraPath }) {
+/**
+ * Arrastrar en horizontal o las flechas ← → cambian `wanted`, la fracción del recorrido pedida. En un recorrido
+ * cerrado no se envuelve (puede pasar de 1); en uno que va y vuelve se queda entre 0 y 1. Mientras `enabled` esté en
+ * false no hace nada; `onInput` avisa cada vez que el visitante la mueve.
+ */
+export function usePathInput(
+  path: CameraPath,
+  wanted: RefObject<number>,
+  onInput?: () => void,
+  enabled?: RefObject<boolean>,
+) {
   const gl = useThree((state) => state.gl);
   const invalidate = useThree((state) => state.invalidate);
-  // Fracción del recorrido pedida y la que muestra la cámara, que la sigue con suavidad. En un recorrido cerrado no
-  // se envuelven (pueden pasar de 1); en uno que va y vuelve se quedan entre 0 y 1.
-  const wanted = useRef(0);
-  const shown = useRef(0);
 
   useEffect(() => {
     const element = gl.domElement;
     let lastX: number | null = null;
+    const active = () => enabled?.current ?? true;
     const moveTo = (to: number) => {
       wanted.current = path.pingPong ? Math.min(1, Math.max(0, to)) : to;
+      onInput?.();
       invalidate();
     };
     const onDown = (event: PointerEvent) => {
+      if (!active()) return;
       lastX = event.clientX;
       element.setPointerCapture(event.pointerId);
     };
@@ -45,7 +54,7 @@ export function PathCamera({ path }: { path: CameraPath }) {
       if (element.hasPointerCapture(event.pointerId)) element.releasePointerCapture(event.pointerId);
     };
     const onKey = (event: KeyboardEvent) => {
-      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      if (!active() || (event.key !== "ArrowLeft" && event.key !== "ArrowRight")) return;
       moveTo(wanted.current + (event.key === "ArrowRight" ? 1 : -1) * (SECONDS_PER_KEY / path.seconds));
     };
     element.addEventListener("pointerdown", onDown);
@@ -60,12 +69,24 @@ export function PathCamera({ path }: { path: CameraPath }) {
       element.removeEventListener("pointercancel", onUp);
       window.removeEventListener("keydown", onKey);
     };
-  }, [gl, invalidate, path]);
+  }, [gl, invalidate, path, wanted, onInput, enabled]);
+}
+
+/** Acerca con suavidad `shown` (la fracción que muestra la cámara) a `wanted` y devuelve la fase para `path.place`. */
+export function followPath(path: CameraPath, shown: RefObject<number>, wanted: RefObject<number>, delta: number) {
+  const gap = wanted.current - shown.current;
+  shown.current = Math.abs(gap) < 1e-5 ? wanted.current : shown.current + gap * (1 - Math.exp(-delta * SMOOTHING));
+  return path.pingPong ? shown.current : ((shown.current % 1) + 1) % 1;
+}
+
+export function PathCamera({ path }: { path: CameraPath }) {
+  const invalidate = useThree((state) => state.invalidate);
+  const wanted = useRef(0);
+  const shown = useRef(0);
+  usePathInput(path, wanted);
 
   useFrame((state, delta) => {
-    const gap = wanted.current - shown.current;
-    shown.current = Math.abs(gap) < 1e-5 ? wanted.current : shown.current + gap * (1 - Math.exp(-delta * SMOOTHING));
-    path.place(path.pingPong ? shown.current : ((shown.current % 1) + 1) % 1, state.camera);
+    path.place(followPath(path, shown, wanted, delta), state.camera);
     // Con frameloop="demand" hay que pedir otro frame mientras la cámara siga en camino.
     if (shown.current !== wanted.current) invalidate();
   });

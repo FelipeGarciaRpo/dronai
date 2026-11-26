@@ -31,7 +31,7 @@ export function ViewerPanel({ title, place, children }: Props) {
   );
 }
 
-const HINTS = {
+export const VIEWER_HINTS = {
   free: "Drag to orbit · scroll to zoom · right-click to pan",
   // Visor de las escenas: la cámara va por el recorrido del carrusel de la portada (ver path-camera.tsx).
   drone: "Drag or use the ← → arrow keys to follow the drone's flight",
@@ -39,6 +39,6 @@ const HINTS = {
 };
 
 /** Las instrucciones para moverse por el visor, al pie del panel. */
-export function ViewerHint({ camera = "free" }: { camera?: keyof typeof HINTS }) {
-  return <p className="text-xs text-ink-faint">{HINTS[camera]}</p>;
+export function ViewerHint({ camera = "free" }: { camera?: keyof typeof VIEWER_HINTS }) {
+  return <p className="text-xs text-ink-faint">{VIEWER_HINTS[camera]}</p>;
 }
